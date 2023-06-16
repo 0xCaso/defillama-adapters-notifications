@@ -53,7 +53,7 @@ const setLastCommitDate = (date: string) => {
 };
 
 const checkCommits = async () => {
-  let lastCommitDate = getLastCommitDate() || new Date(Date.now() - 1000 * 60 * 60).toISOString();
+  let lastCommitDate = getLastCommitDate() || new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString();
   let date = new Date(new Date(lastCommitDate).getTime() + 1000).toISOString();
   console.log(`[${new Date().toLocaleString()}]: Getting since date: ${date}`);
   let commits = await getCommitsSinceDate(date);
@@ -76,24 +76,19 @@ const checkCommits = async () => {
     const lastCommitDate = commits[commits.length - 1].commit.committer?.date || "";
     setLastCommitDate(lastCommitDate);
   }
-  await bot.api.sendMessage(channelId, "test");
   // Commit and push the updated last_commit_date.txt file
   const fileContent = getLastCommitDate();
   const commitMessage = `Update last_commit_date.txt: ${fileContent}`;
-
   try {
     const owner = "0xCaso";
     const repo = "defillama-adapters-notifications";
     const branch = "main";
-
     const response = await octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
       owner,
       repo,
       ref: `heads/${branch}`,
     });
-
     const sha = response.data.object.sha;
-
     await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
       owner,
       repo,
@@ -103,7 +98,6 @@ const checkCommits = async () => {
       branch,
       sha,
     });
-
     console.log("last_commit_date.txt committed and pushed successfully.");
   } catch (err) {
     console.error("Error committing and pushing last_commit_date.txt:", err);
