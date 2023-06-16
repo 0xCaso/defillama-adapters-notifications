@@ -8,7 +8,6 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,11 +26,21 @@ jobs:
           export GH_TOKEN=${{ secrets.GH_TOKEN }}
           export CHANNEL_ID=${{ secrets.CHANNEL_ID }}
           npm run build && npm run start
-      
+
+      - name: Check if last_commit_date.txt has changed
+        id: check_diff
+        run: |
+          git diff --exit-code last_commit_date.txt || echo "::set-output name=changed::true"
+
+  commit:
+    runs-on: ubuntu-latest
+    needs: run
+    if: needs.run.outputs.check_diff == 'true'
+    steps:
       - name: Commit and push changes
         run: |
-          git config user.name "0xCaso"
-          git config user.email "matteocasonato@protonmail.com"
+          git config user.name "casoGithubBot"
+          git config user.email "caso.github.bot@proton.me"
           git add last_commit_date.txt
           git commit -m "Update last_commit_date.txt"
           git push
