@@ -24,6 +24,6 @@ jobs:
       - name: Run bot script
         run: |
           export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export GH_TOKEN=${{ secrets.GH_TOKEN }}
           export CHANNEL_ID=${{ secrets.CHANNEL_ID }}
           npm run build && npm run start
