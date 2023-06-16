@@ -1,0 +1,29 @@
+name: Check Commits
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Run bot script
+        run: |
+          export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          export CHANNEL_ID=${{ secrets.CHANNEL_ID }}
+          npm run build && npm run start

@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "@octokit/core": "^4.2.1",
+    "dotenv": "^16.2.0",
+    "fs": "^0.0.1-security",
+    "grammy": "^1.16.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1"
+  }
+}
