@@ -27,3 +27,11 @@ jobs:
           export GH_TOKEN=${{ secrets.GH_TOKEN }}
           export CHANNEL_ID=${{ secrets.CHANNEL_ID }}
           npm run build && npm run start
+      
+      - name: Commit and push changes
+        run: |
+          git config user.name "0xCaso"
+          git config user.email "matteocasonato@protonmail.com"
+          git add last_commit_date.txt
+          git commit -m "Update last_commit_date.txt"
+          git push

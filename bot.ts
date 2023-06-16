@@ -76,32 +76,6 @@ const checkCommits = async () => {
     const lastCommitDate = commits[commits.length - 1].commit.committer?.date || "";
     setLastCommitDate(lastCommitDate);
   }
-  // Commit and push the updated last_commit_date.txt file
-  const fileContent = getLastCommitDate();
-  const commitMessage = `Update last_commit_date.txt: ${fileContent}`;
-  try {
-    const owner = "0xCaso";
-    const repo = "defillama-adapters-notifications";
-    const branch = "main";
-    const response = await octokit.request("GET /repos/{owner}/{repo}/git/ref/{ref}", {
-      owner,
-      repo,
-      ref: `heads/${branch}`,
-    });
-    const sha = response.data.object.sha;
-    await octokit.request("PUT /repos/{owner}/{repo}/contents/{path}", {
-      owner,
-      repo,
-      path: "last_commit_date.txt",
-      message: commitMessage,
-      content: Buffer.from(fileContent).toString("base64"),
-      branch,
-      sha,
-    });
-    console.log("last_commit_date.txt committed and pushed successfully.");
-  } catch (err) {
-    console.error("Error committing and pushing last_commit_date.txt:", err);
-  }
 };
 
 checkCommits();
