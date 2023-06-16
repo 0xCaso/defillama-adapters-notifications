@@ -8,7 +8,7 @@ type MyContext = Context;
 dotenv.config();
 
 const bot = new Bot<MyContext>(process.env.BOT_TOKEN || "");
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+const octokit = new Octokit({ auth: process.env.GH_TOKEN });
 const channelId = process.env.CHANNEL_ID || "";
 
 const getCommitsSinceDate = async (date: string) => {
