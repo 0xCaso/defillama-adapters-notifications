@@ -6,11 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  run:
+  run_and_commit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -27,20 +29,16 @@ jobs:
           export CHANNEL_ID=${{ secrets.CHANNEL_ID }}
           npm run build && npm run start
 
-      - name: Check if last_commit_date.txt has changed
-        id: check_diff
+      - name: Check if last_commit_date.txt has changed and commit
         run: |
-          git diff --exit-code last_commit_date.txt || echo "::set-output name=changed::true"
-
-  commit:
-    runs-on: ubuntu-latest
-    needs: run
-    if: needs.run.outputs.check_diff == 'true'
-    steps:
-      - name: Commit and push changes
-        run: |
-          git config user.name "casoGithubBot"
-          git config user.email "caso.github.bot@proton.me"
-          git add last_commit_date.txt
-          git commit -m "Update last_commit_date.txt"
-          git push
+          if git diff --exit-code last_commit_date.txt > /dev/null; then
+            echo "No changes detected in last_commit_date.txt"
+          else
+            eval "$(ssh-agent -s)"
+            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+            git config --global user.name "casoGithubBot"
+            git config --global user.email "caso.github.bot@proton.me"
+            git add last_commit_date.txt
+            git commit -m "Update last_commit_date.txt"
+            git push --set-upstream git@github.com:${{ github.repository }}.git ${{ github.head_ref }}
+          fi
