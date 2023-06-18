@@ -61,12 +61,15 @@ const checkCommits = async () => {
     commits.sort((a: any, b: any) => {
       return new Date(a.commit.committer.date).getTime() - new Date(b.commit.committer.date).getTime();
     });
-    let message = "",
-      i = 0;
+    let message = "", i = 0;
     for (let commit of commits) {
       const escapedMessage = escapeMarkdown(commit.commit.message);
       const escapedUrl = escapeMarkdown(commit.html_url);
-      message += `*${++i}\\)* [${escapedMessage}](${escapedUrl}) \n\n`;
+      if (commits.length > 1) {
+        message += `*${++i}\\)* [${escapedMessage}](${escapedUrl}) \n\n`;
+      } else {
+        message += `[${escapedMessage}](${escapedUrl})`;
+      }
       if (i === 10) {
         await bot.api.sendMessage(channelId, message, { parse_mode: "MarkdownV2" });
         message = "";
